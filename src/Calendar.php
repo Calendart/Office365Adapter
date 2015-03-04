@@ -21,12 +21,6 @@ class Calendar extends AbstractCalendar
     /** @var string Calendar's changekey */
     private $changeKey;
 
-    public function __construct($id, $name = null)
-    {
-        $this->id = $id;
-        parent::__construct($name);
-    }
-
     /** @return string */
     public function getId()
     {
