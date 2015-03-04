@@ -18,8 +18,8 @@ class Calendar extends AbstractCalendar
     /** @var string Calendar's id */
     private $id;
 
-    /** @var string Calendar's changekey */
-    private $changeKey;
+    /** @var string */
+    private $etag;
 
     /** @return string */
     public function getId()
@@ -27,9 +27,9 @@ class Calendar extends AbstractCalendar
         return $this->id;
     }
 
-    public function getChangeKey()
+    public function getEtag()
     {
-        return $this->changeKey;
+        return $this->etag;
     }
 }
 
