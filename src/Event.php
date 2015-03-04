@@ -14,7 +14,7 @@ namespace CalendArt\Adapter\Office365;
 use InvalidArgumentException;
 
 use CalendArt\AbstractEvent,
-    CalendArt\EventParticipation;
+    CalendArt\EventParticipation as BaseEventParticipation;
 
 /**
  * Office365
@@ -205,6 +205,16 @@ class Event extends AbstractEvent
         }
 
         $this->type = $type;
+    }
+
+    /** @return $this */
+    public function addParticipation(BaseEventParticipation $participation)
+    {
+        if (!$participation instanceof EventParticipation) {
+            throw new InvalidArgumentException('Only a Office365 EventParticipation may be added as an attendee to an Office365 Event');
+        }
+
+        return parent::addParticipation($participation);
     }
 }
 
