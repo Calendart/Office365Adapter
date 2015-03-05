@@ -31,8 +31,10 @@ class Office365Adapter implements AdapterInterface
     public function __construct($token)
     {
         $this->guzzle = new Guzzle(['base_url' => 'https://outlook.office365.com/api/v1.0/me/',
-                                    'defaults' => ['headers'    => ['Authorization' => sprintf('Bearer %s', $token)],
-                                                   'exceptions' => false]]);
+                                    'defaults' => ['exceptions' => false,
+                                                    'headers' => ['Authorization' => sprintf('Bearer %s', $token),
+                                                                  'Content-Type' => 'application/json',
+                                                                  'Accept' => 'application/json;odata=verbose']]]);
     }
 
     /** {@inheritDoc} */
