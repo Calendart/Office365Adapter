@@ -61,6 +61,14 @@ class CalendarApi implements CalendarApiInterface
 
     public function get($identifier)
     {
+        $request = $this->guzzle->createRequest('GET', sprintf('calendars/%s', $identifier));
+        $response = $this->guzzle->send($request);
+
+        if (200 > $response->getStatusCode() || 300 <= $response->getStatusCode()) {
+            throw new ApiErrorException($response);
+        }
+
+        return Calendar::hydrate($response->json());
     }
 }
 
