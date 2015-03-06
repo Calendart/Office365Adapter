@@ -34,7 +34,7 @@ class Office365Adapter implements AdapterInterface
                                     'defaults' => ['exceptions' => false,
                                                     'headers' => ['Authorization' => sprintf('Bearer %s', $token),
                                                                   'Content-Type' => 'application/json',
-                                                                  'Accept' => 'application/json;odata=verbose']]]);
+                                                                  'Accept' => 'application/json']]]);
     }
 
     /** {@inheritDoc} */
