@@ -73,11 +73,13 @@ class Event extends AbstractEvent
     /** @var Recurrence */
     private $recurrence;
 
-    public function __construct(Calendar $calendar)
+    public function __construct(Calendar $calendar = null)
     {
         $this->calendar = $calendar;
 
-        $calendar->getEvents()->add($this);
+        if (null !== $calendar) {
+            $calendar->getEvents()->add($this);
+        }
     }
 
     public function getId()
