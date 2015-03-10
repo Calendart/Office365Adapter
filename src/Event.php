@@ -11,7 +11,8 @@
 
 namespace CalendArt\Adapter\Office365;
 
-use InvalidArgumentException;
+use Datetime,
+    InvalidArgumentException;
 
 use CalendArt\AbstractEvent,
     CalendArt\EventParticipation as BaseEventParticipation;
@@ -218,5 +219,39 @@ class Event extends AbstractEvent
 
         return parent::addParticipation($participation);
     }
+
+    /**
+     * Hydrate a new Event object with data received from Office365 api
+     *
+     * @param array $data Data to feed the Event object with
+     * @return self
+     */
+    public static function hydrate(array $data, Calendar $calendar = null)
+   {
+        if (!isset($data['Id'], $data['Subject'], $data['ChangeKey'])) {
+            throw new InvalidArgumentException(sprintf('Missing at least one of the mandatory properties "Id", "Name", "ChangeKey" ; got ["%s"]', implode('", "', array_keys($data))));
+        }
+
+        $event = new static($calendar);
+
+        $event->id = $data['Id'];
+        $event->name = $data['Subject'];
+        $event->etag = $data['ChangeKey'];
+
+        $event->location = $data['Location']['DisplayName'];
+        $event->createdAt = new Datetime($data['DateTimeCreated']);
+        $event->updatedAt = new Datetime($data['DateTimeLastModified']);
+
+        $event->end = new Datetime($data['End']);
+        $event->start = new Datetime($data['Start']);
+
+        $event->recurrence = $data['Recurrence'];
+        $event->allDay = true === $data['IsAllDay'];
+        $event->cancelled = true === $data['IsCancelled'];
+
+        $event->categories = $data['Categories'];
+
+        return $event;
+   }
 }
 
