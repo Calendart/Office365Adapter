@@ -12,6 +12,9 @@
 namespace CalendArt\Adapter\Office365;
 
 use Datetime,
+    DateTimezone,
+
+    Exception,
     InvalidArgumentException;
 
 use CalendArt\AbstractEvent,
@@ -245,6 +248,14 @@ class Event extends AbstractEvent
         $event->end = new Datetime($data['End']);
         $event->start = new Datetime($data['Start']);
 
+        try {
+            $event->end->setTimezone(new DateTimezone($data['EndTimeZone']));
+        } catch (Exception $e) { }
+
+        try {
+            $event->start->setTimezone(new DateTimezone($data['StartTimeZone']));
+        } catch (Exception $e) { }
+
         $event->recurrence = $data['Recurrence'];
         $event->allDay = true === $data['IsAllDay'];
         $event->cancelled = true === $data['IsCancelled'];
@@ -252,6 +263,6 @@ class Event extends AbstractEvent
         $event->categories = $data['Categories'];
 
         return $event;
-   }
+    }
 }
 
