@@ -28,6 +28,8 @@ use CalendArt\AbstractEvent,
  */
 class Event extends AbstractEvent
 {
+    use ReflectionTrait;
+
     const STATUS_UNKNOWN = -1;
     const STATUS_FREE = 0;
     const STATUS_TENTATIVE = 1;
@@ -261,6 +263,10 @@ class Event extends AbstractEvent
         $event->cancelled = true === $data['IsCancelled'];
 
         $event->categories = $data['Categories'];
+
+        $event->importance = self::translateConstantToValue('IMPORTANCE_', $data['Importance']);
+        $event->status = self::translateConstantToValue('STATUS_', $data['ShowAs']);
+        $event->type = self::translateConstantToValue('TYPE_', $data['Type']);
 
         return $event;
     }
