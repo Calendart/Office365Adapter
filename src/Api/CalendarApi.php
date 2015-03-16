@@ -9,14 +9,15 @@
  * @license   http://www.opensource.org/licenses/MIT-License MIT License
  */
 
-namespace CalendArt\Adapter\Office365;
+namespace CalendArt\Adapter\Office365\Api;
 
 use GuzzleHttp\Client as Guzzle;
 
 use Doctrine\Common\Collections\ArrayCollection;
 
-use CalendArt\AbstractEvent,
-    CalendArt\Adapter\EventApiInterface,
+use CalendArt\AbstractCalendar,
+
+    CalendArt\Adapter\CalendarApiInterface,
     CalendArt\Adapter\Office365\Exception\ApiErrorException;
 
 /**
@@ -24,7 +25,7 @@ use CalendArt\AbstractEvent,
  *
  * @author Baptiste Clavié <baptiste@wisembly.com>
  */
-class EventApi implements EventApiInterface
+class CalendarApi implements CalendarApiInterface
 {
     /** @var Guzzle Guzzle Http Client to use */
     private $guzzle;
@@ -38,20 +39,10 @@ class EventApi implements EventApiInterface
         $this->adapter = $adapter;
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * If a calendar is given, it fetches the event for this calendar ; otherwise, it takes the primary
-     */
-    public function getList(Calendar $calendar = null)
+    /** {@inheritDoc} */
+    public function getList()
     {
-        $url = 'events';
-
-        if (null !== $calendar) {
-            $url = sprintf('calendars/%s/events', $calendar->getId());
-        }
-
-        $request = $this->guzzle->createRequest('GET', $url);
+        $request = $this->guzzle->createRequest('GET', 'calendars');
         $response = $this->guzzle->send($request);
 
         if (200 > $response->getStatusCode() || 300 <= $response->getStatusCode()) {
@@ -62,20 +53,22 @@ class EventApi implements EventApiInterface
         $list = new ArrayCollection;
 
         foreach ($result['value'] as $item) {
-            $list[$item['Id']] = Event::hydrate($item);
+            $list[$item['Id']] = Calendar::hydrate($item);
         }
 
         return $list;
     }
 
-    /** {@inheritDoc} */
     public function get($identifier)
     {
-    }
+        $request = $this->guzzle->createRequest('GET', sprintf('calendars/%s', $identifier));
+        $response = $this->guzzle->send($request);
 
-    /** {@inheritDoc} */
-    public function persist(AbstractEvent $event)
-    {
+        if (200 > $response->getStatusCode() || 300 <= $response->getStatusCode()) {
+            throw new ApiErrorException($response);
+        }
+
+        return Calendar::hydrate($response->json());
     }
 }
 

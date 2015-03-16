@@ -13,8 +13,10 @@ namespace CalendArt\Adapter\Office365;
 
 use GuzzleHttp\Client as Guzzle;
 
-use CalendArt\AbstractCalendar,
-    CalendArt\Adapter\AdapterInterface;
+use CalendArt\Adapter\AdapterInterface,
+
+    CalendArt\Adapter\Office365\Api\EventApi,
+    CalendArt\Adapter\Office365\Api\CalendarApi;
 
 /**
  * Office365 Adapter - He knows how to dialog with office 365's calendars !
