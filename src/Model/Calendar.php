@@ -9,7 +9,7 @@
  * @license   http://www.opensource.org/licenses/MIT-License MIT License
  */
 
-namespace CalendArt\Adapter\Office365;
+namespace CalendArt\Adapter\Office365\Model;
 
 use CalendArt\AbstractCalendar;
 

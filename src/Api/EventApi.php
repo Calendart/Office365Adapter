@@ -17,6 +17,9 @@ use Doctrine\Common\Collections\ArrayCollection;
 
 use CalendArt\AbstractEvent,
     CalendArt\Adapter\EventApiInterface,
+
+    CalendArt\Adapter\Office365\Model\Event,
+    CalendArt\Adapter\Office365\Model\Calendar,
     CalendArt\Adapter\Office365\Exception\ApiErrorException;
 
 /**
