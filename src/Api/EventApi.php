@@ -20,6 +20,8 @@ use CalendArt\AbstractEvent,
 
     CalendArt\Adapter\Office365\Model\Event,
     CalendArt\Adapter\Office365\Model\Calendar,
+
+    CalendArt\Adapter\Office365\Office365Adapter,
     CalendArt\Adapter\Office365\Exception\ApiErrorException;
 
 /**

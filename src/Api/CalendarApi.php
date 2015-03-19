@@ -16,8 +16,10 @@ use GuzzleHttp\Client as Guzzle;
 use Doctrine\Common\Collections\ArrayCollection;
 
 use CalendArt\AbstractCalendar,
-
     CalendArt\Adapter\CalendarApiInterface,
+
+    CalendArt\Adapter\Office365\Model\Calendar,
+    CalendArt\Adapter\Office365\Office365Adapter,
     CalendArt\Adapter\Office365\Exception\ApiErrorException;
 
 /**

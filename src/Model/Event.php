@@ -18,7 +18,9 @@ use Datetime,
     InvalidArgumentException;
 
 use CalendArt\AbstractEvent,
-    CalendArt\EventParticipation as BaseEventParticipation;
+    CalendArt\EventParticipation as BaseEventParticipation,
+
+    CalendArt\Adapter\Office365\ReflectionTrait;
 
 /**
  * Office365
