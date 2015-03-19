@@ -26,7 +26,7 @@ class EventParticipation extends BaseEventParticipation
     //const TYPE_RESOURCE = 2;
 
     const STATUS_NONE = null;
-    const STATUS_ORGANIZER = 2;
+    //const STATUS_ORGANIZER = 2;
 
     private $type = self::TYPE_OPTIONAL;
 
@@ -44,7 +44,7 @@ class EventParticipation extends BaseEventParticipation
     /** {@inheritDoc} */
     public static function getAvailableStatuses()
     {
-        return parent::getAvailableStatuses() + [static::STATUS_NONE, static::STATUS_ORGANIZER];
+        return parent::getAvailableStatuses() + [static::STATUS_NONE];
     }
 }
 
