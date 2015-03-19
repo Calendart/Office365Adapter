@@ -81,6 +81,9 @@ class Event extends AbstractEvent
     /** @var Recurrence */
     private $recurrence;
 
+    /** @var User[] All the fetched and hydrated users, with an id as a key **/
+    protected static $users = [];
+
     public function __construct(Calendar $calendar = null)
     {
         $this->calendar = $calendar;
@@ -270,7 +273,27 @@ class Event extends AbstractEvent
         $event->status = self::translateConstantToValue('STATUS_', $data['ShowAs']);
         $event->type = self::translateConstantToValue('TYPE_', $data['Type']);
 
+        $event->owner = self::buildUser($data['Organizer']);
+        $event->owner->addEvent($event);
+
         return $event;
     }
-}
 
+    /**
+     * Build a User object based on given data
+     *
+     * @param array $data User data
+     *
+     * @return User
+     */
+    private static function buildUser(array $data)
+    {
+        $id = sha1($data['EmailAddress']['Address']);
+
+        if (!isset(static::$users[$id])) {
+            static::$users[$id] = User::hydrate($data['EmailAddress']);
+        }
+
+        return static::$users[$id];
+    }
+}
