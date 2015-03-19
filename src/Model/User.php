@@ -21,5 +21,40 @@ use CalendArt\User as BaseUser;
  */
 class User extends BaseUser
 {
+    /** @var string */
+    private $id;
+
+    /**
+     * Raw data which built this object
+     *
+     * @var array
+     */
+    private $raw = [];
+
+    /** @return string */
+    public function getId()
+    {
+        return $this->id;
+    }
+
+    /** @return array */
+    public function getRawData()
+    {
+        return $this->raw;
+    }
+
+    public static function hydrate(array $data)
+    {
+        if (!isset($data['Address'], $data['Name'])) {
+            throw new InvalidArgumentException(sprintf('Missing some required key (required : [\'Address\', \'Name\'], got [\'%s\'])', array_keys($data)));
+        }
+
+        $user = new static($data['Name'], $data['Address']);
+
+        $user->raw = $data;
+        $user->id = sha1($data['Address']);
+
+        return $user;
+    }
 }
 
