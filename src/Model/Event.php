@@ -17,6 +17,9 @@ use Datetime,
     Exception,
     InvalidArgumentException;
 
+use Doctrine\Common\Collections\Collection,
+    Doctrine\Common\Collections\ArrayCollection;
+
 use CalendArt\AbstractEvent,
     CalendArt\EventParticipation as BaseEventParticipation,
 
@@ -275,6 +278,34 @@ class Event extends AbstractEvent
 
         $event->owner = self::buildUser($data['Organizer']);
         $event->owner->addEvent($event);
+
+        $event->participations = new ArrayCollection;
+
+        //now the fun stuff : the attendees
+        foreach ($data['Attendees'] ?: [] as $attendee) {
+            // a resource is not an attendee
+            if ('Resource' === $attendee['Type']) {
+                continue;
+            }
+
+            $user = static::buildUser($attendee);
+            $role = EventParticipation::ROLE_PARTICIPANT;
+
+            if ($event->owner->getId() === $user->getId()) {
+                $role |= EventParticipation::ROLE_MANAGER;
+            }
+
+            $participation = new EventParticipation($event, $user, $role, EventParticipation::STATUS_NONE);
+            $participation->setStatus(EventParticipation::translateStatus($attendee['Status']['Response']));
+            $participation->setType(self::translateConstantToValue('TYPE_', $attendee['Type']));
+
+            if (EventParticipation::STATUS_NONE !== $participation->getStatus()) {
+                $participation->setAnsweredAt($attendee['Status']['Time']);
+            }
+
+            $user->addEvent($event);
+            $event->participations->add($participation);
+        }
 
         return $event;
     }
