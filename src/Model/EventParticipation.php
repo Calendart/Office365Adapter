@@ -13,6 +13,8 @@ namespace CalendArt\Adapter\Office365\Model;
 
 use CalendArt\EventParticipation as BaseEventParticipation;
 
+use InvalidArgumentException;
+
 /**
  * Office365 Attendee
  *
@@ -45,6 +47,27 @@ class EventParticipation extends BaseEventParticipation
     public static function getAvailableStatuses()
     {
         return parent::getAvailableStatuses() + [static::STATUS_NONE];
+    }
+
+    public static function translateStatus($status)
+    {
+        switch($status) {
+            case 'None':
+            case 'NotResponded':
+                return static::STATUS_NONE;
+
+            case 'TentativelyAccepted':
+                return static::STATUS_TENTATIVE;
+
+            case 'Accepted':
+                return static::STATUS_ACCEPTED;
+
+            case 'Declined':
+                return static::STATUS_DECLINED;
+
+            default:
+                throw new InvalidArgumentException(sprintf('Wrong status sent. Expected one of [\'None\', \'NotResponded\', \'TentativelyAccepted\', \'Accepted\', \'Declined\'], had "%s"', $status));
+        }
     }
 }
 
