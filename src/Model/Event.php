@@ -23,7 +23,8 @@ use Doctrine\Common\Collections\Collection,
 use CalendArt\AbstractEvent,
     CalendArt\EventParticipation as BaseEventParticipation,
 
-    CalendArt\Adapter\Office365\ReflectionTrait;
+    CalendArt\Adapter\Office365\ReflectionTrait,
+    CalendArt\Adapter\Office365\Office365Adapter;
 
 /**
  * Office365
@@ -83,9 +84,6 @@ class Event extends AbstractEvent
 
     /** @var Recurrence */
     private $recurrence;
-
-    /** @var User[] All the fetched and hydrated users, with an id as a key **/
-    protected static $users = [];
 
     public function __construct(Calendar $calendar = null)
     {
@@ -276,7 +274,7 @@ class Event extends AbstractEvent
         $event->status = self::translateConstantToValue('STATUS_', $data['ShowAs']);
         $event->type = self::translateConstantToValue('TYPE_', $data['Type']);
 
-        $event->owner = self::buildUser($data['Organizer']);
+        $event->owner = Office365Adapter::buildUser($data['Organizer']);
         $event->owner->addEvent($event);
 
         $event->participations = new ArrayCollection;
@@ -288,7 +286,7 @@ class Event extends AbstractEvent
                 continue;
             }
 
-            $user = static::buildUser($attendee);
+            $user = Office365Adapter::buildUser($attendee);
             $role = EventParticipation::ROLE_PARTICIPANT;
 
             if ($event->owner->getId() === $user->getId()) {
@@ -308,23 +306,5 @@ class Event extends AbstractEvent
         }
 
         return $event;
-    }
-
-    /**
-     * Build a User object based on given data
-     *
-     * @param array $data User data
-     *
-     * @return User
-     */
-    private static function buildUser(array $data)
-    {
-        $id = sha1($data['EmailAddress']['Address']);
-
-        if (!isset(static::$users[$id])) {
-            static::$users[$id] = User::hydrate($data['EmailAddress']);
-        }
-
-        return static::$users[$id];
     }
 }

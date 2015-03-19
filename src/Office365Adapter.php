@@ -15,6 +15,7 @@ use GuzzleHttp\Client as Guzzle;
 
 use CalendArt\Adapter\AdapterInterface,
 
+    CalendArt\Adapter\Office365\Model\User,
     CalendArt\Adapter\Office365\Api\EventApi,
     CalendArt\Adapter\Office365\Api\CalendarApi;
 
@@ -29,6 +30,10 @@ use CalendArt\Adapter\AdapterInterface,
  */
 class Office365Adapter implements AdapterInterface
 {
+    /** @var User[] All the fetched and hydrated users, with an id as a key **/
+    private static $users = [];
+
+
     /** @param string $token access token delivered by azure's oauth system */
     public function __construct($token)
     {
@@ -47,6 +52,24 @@ class Office365Adapter implements AdapterInterface
     /** {@inheritDoc} */
     public function getEventApi()
     {
+    }
+
+    /**
+     * Build a User object based on given data
+     *
+     * @param array $data User data
+     *
+     * @return User
+     */
+    public static function buildUser(array $data)
+    {
+        $id = sha1($data['EmailAddress']['Address']);
+
+        if (!isset(static::$users[$id])) {
+            static::$users[$id] = User::hydrate($data['EmailAddress']);
+        }
+
+        return static::$users[$id];
     }
 }
 
