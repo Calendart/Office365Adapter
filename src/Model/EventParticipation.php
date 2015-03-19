@@ -30,16 +30,15 @@ class EventParticipation extends BaseEventParticipation
 
     private $type = self::TYPE_OPTIONAL;
 
-    /** @return User */
-    public function getUser()
-    {
-        return parent::getUser();
-    }
-
     /** @return integer */
     public function getType()
     {
         return $this->type;
+    }
+
+    public function setType($type)
+    {
+        $this->type = $type;
     }
 
     /** {@inheritDoc} */
