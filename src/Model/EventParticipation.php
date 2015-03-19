@@ -23,7 +23,7 @@ class EventParticipation extends BaseEventParticipation
 {
     const TYPE_REQUIRED = 0;
     const TYPE_OPTIONAL = 1;
-    const TYPE_RESOURCE = 2;
+    //const TYPE_RESOURCE = 2;
 
     const STATUS_NONE = null;
     const STATUS_ORGANIZER = 2;
