@@ -15,6 +15,8 @@ use CalendArt\EventParticipation as BaseEventParticipation;
 
 use InvalidArgumentException;
 
+use CalendArt\Adapter\Office365\ReflectionTrait;
+
 /**
  * Office365 Attendee
  *
@@ -23,6 +25,8 @@ use InvalidArgumentException;
  */
 class EventParticipation extends BaseEventParticipation
 {
+    use ReflectionTrait;
+
     const TYPE_REQUIRED = 0;
     const TYPE_OPTIONAL = 1;
     //const TYPE_RESOURCE = 2;
@@ -68,6 +72,10 @@ class EventParticipation extends BaseEventParticipation
             default:
                 throw new InvalidArgumentException(sprintf('Wrong status sent. Expected one of [\'None\', \'NotResponded\', \'TentativelyAccepted\', \'Accepted\', \'Declined\'], had "%s"', $status));
         }
+    }
+
+    public static function translateType($type) {
+        return self::translateConstantToValue('TYPE_', $type);
     }
 }
 
