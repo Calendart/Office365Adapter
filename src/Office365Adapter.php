@@ -15,9 +15,8 @@ use GuzzleHttp\Client as Guzzle;
 
 use CalendArt\Adapter\AdapterInterface,
 
-    CalendArt\Adapter\Office365\Model\User,
-    CalendArt\Adapter\Office365\Api\EventApi,
-    CalendArt\Adapter\Office365\Api\CalendarApi;
+    CalendArt\Adapter\Office365\Api,
+    CalendArt\Adapter\Office365\Model\User;
 
 /**
  * Office365 Adapter - He knows how to dialog with office 365's calendars !
@@ -33,7 +32,6 @@ class Office365Adapter implements AdapterInterface
     /** @var User[] All the fetched and hydrated users, with an id as a key **/
     private static $users = [];
 
-
     /** @param string $token access token delivered by azure's oauth system */
     public function __construct($token)
     {
@@ -47,11 +45,25 @@ class Office365Adapter implements AdapterInterface
     /** {@inheritDoc} */
     public function getCalendarApi()
     {
+        static $api = null;
+
+        if (null === $api) {
+            $api = new Api\CalendarApi($this->guzzle, $this);
+        }
+
+        return $api;
     }
 
     /** {@inheritDoc} */
     public function getEventApi()
     {
+        static $api = null;
+
+        if (null === $api) {
+            $api = new Api\EventApi($this->guzzle, $this);
+        }
+
+        return $api;
     }
 
     /**
