@@ -56,6 +56,7 @@ class EventParticipation extends BaseEventParticipation
     public static function translateStatus($status)
     {
         switch($status) {
+            case null:
             case 'None':
             case 'NotResponded':
                 return static::STATUS_NONE;
