@@ -47,8 +47,11 @@ class EventApi implements EventApiInterface
      * {@inheritDoc}
      *
      * If a calendar is given, it fetches the event for this calendar ; otherwise, it takes the primary
+     *
+     * @param string $filter `$filter` query parameter to give to the request
+     * @param string $orderBy `$orderBy` query, to have an order of elements
      */
-    public function getList(Calendar $calendar = null)
+    public function getList(Calendar $calendar = null, $filter = '', $orderBy = '')
     {
         $url = 'events';
 
@@ -56,7 +59,21 @@ class EventApi implements EventApiInterface
             $url = sprintf('calendars/%s/events', $calendar->getId());
         }
 
-        $request = $this->guzzle->createRequest('GET', $url);
+        $params = [];
+
+        if (!empty($filter)) {
+            $params['$filter'] = $filter;
+        }
+
+        if (!empty($orderBy)) {
+            $params['$orderBy'] = $orderBy;
+        }
+
+        if (!empty($params)) {
+            $params = ['query' => $params];
+        }
+
+        $request = $this->guzzle->createRequest('GET', $url, $params);
         $response = $this->guzzle->send($request);
 
         if (200 > $response->getStatusCode() || 300 <= $response->getStatusCode()) {
