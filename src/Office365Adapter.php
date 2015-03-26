@@ -29,8 +29,11 @@ use CalendArt\Adapter\AdapterInterface,
  */
 class Office365Adapter implements AdapterInterface
 {
+    /** @var Guzzle */
+    protected $guzzle;
+
     /** @var User[] All the fetched and hydrated users, with an id as a key **/
-    private static $users = [];
+    protected static $users = [];
 
     /** @param string $token access token delivered by azure's oauth system */
     public function __construct($token)
