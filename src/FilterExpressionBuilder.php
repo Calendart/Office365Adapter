@@ -27,7 +27,7 @@ class FilterExpressionBuilder
      *
      * @return string
      */
-    public function andX($x)
+    public static function andX($x)
     {
         return implode(' and ', array_filter(func_get_args()));
     }
@@ -39,7 +39,7 @@ class FilterExpressionBuilder
      *
      * @return string
      */
-    public function orX($x)
+    public static function orX($x)
     {
         return implode(' or ', array_filter(func_get_args()));
     }
@@ -52,7 +52,7 @@ class FilterExpressionBuilder
      *
      * @return string
      */
-    public function eq($x, $y)
+    public static function eq($x, $y)
     {
         return sprintf('%1$s eq %2$s', $x, $y);
     }
@@ -65,7 +65,7 @@ class FilterExpressionBuilder
      *
      * @return string
      */
-    public function neq($x, $y)
+    public static function neq($x, $y)
     {
         return sprintf('%1$s ne %2$s', $x, $y);
     }
@@ -78,7 +78,7 @@ class FilterExpressionBuilder
      *
      * @return string
      */
-    public function gt($x, $y)
+    public static function gt($x, $y)
     {
         return sprintf('%1$s gt %2$s', $x, $y);
     }
@@ -91,7 +91,7 @@ class FilterExpressionBuilder
      *
      * @return string
      */
-    public function gte($x, $y)
+    public static function gte($x, $y)
     {
         return sprintf('%1$s ge %2$s', $x, $y);
     }
@@ -104,7 +104,7 @@ class FilterExpressionBuilder
      *
      * @return string
      */
-    public function lt($x, $y)
+    public static function lt($x, $y)
     {
         return sprintf('%1$s lt %2$s', $x, $y);
     }
@@ -117,7 +117,7 @@ class FilterExpressionBuilder
      *
      * @return string
      */
-    public function lte($x, $y)
+    public static function lte($x, $y)
     {
         return sprintf('%1$s le %2$s', $x, $y);
     }
