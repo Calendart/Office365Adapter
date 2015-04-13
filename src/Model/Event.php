@@ -249,6 +249,10 @@ class Event extends AbstractEvent
         $event->name = $data['Subject'];
         $event->etag = $data['ChangeKey'];
 
+        if (!empty($data['BodyPreview'])) {
+            $event->description = $data['BodyPreview'];
+        }
+
         $event->location = $data['Location']['DisplayName'];
         $event->createdAt = new Datetime($data['DateTimeCreated']);
         $event->updatedAt = new Datetime($data['DateTimeLastModified']);
