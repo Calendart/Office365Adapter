@@ -302,7 +302,7 @@ class Event extends AbstractEvent
             $participation->setType(EventParticipation::translateType($attendee['Type']));
 
             if (EventParticipation::STATUS_NONE !== $participation->getStatus()) {
-                $participation->setAnsweredAt($attendee['Status']['Time']);
+                $participation->setAnsweredAt(new Datetime($attendee['Status']['Time']));
             }
 
             $user->addEvent($event);
