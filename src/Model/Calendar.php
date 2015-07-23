@@ -11,6 +11,8 @@
 
 namespace CalendArt\Adapter\Office365\Model;
 
+use InvalidArgumentException;
+
 use CalendArt\AbstractCalendar;
 
 class Calendar extends AbstractCalendar
