@@ -13,6 +13,8 @@ namespace CalendArt\Adapter\Office365\Api;
 
 use GuzzleHttp\Client as Guzzle;
 
+use DateTime;
+
 use Doctrine\Common\Collections\ArrayCollection;
 
 use CalendArt\AbstractEvent,
@@ -41,6 +43,25 @@ class EventApi implements EventApiInterface
     {
         $this->guzzle  = $client;
         $this->adapter = $adapter;
+    }
+
+    private function requestEvents($url, array $params = [])
+    {
+        $request = $this->guzzle->createRequest('GET', $url, $params);
+        $response = $this->guzzle->send($request);
+
+        if (200 > $response->getStatusCode() || 300 <= $response->getStatusCode()) {
+            throw new ApiErrorException($response);
+        }
+
+        $result = $response->json();
+        $list = new ArrayCollection;
+
+        foreach ($result['value'] as $item) {
+            $list[$item['Id']] = Event::hydrate($item);
+        }
+
+        return $list;
     }
 
     /**
@@ -73,21 +94,51 @@ class EventApi implements EventApiInterface
             $params = ['query' => $params];
         }
 
-        $request = $this->guzzle->createRequest('GET', $url, $params);
-        $response = $this->guzzle->send($request);
+        return $this->requestEvents($url, $params);
+    }
 
-        if (200 > $response->getStatusCode() || 300 <= $response->getStatusCode()) {
-            throw new ApiErrorException($response);
+    /**
+     * Get the occurrences, exceptions, and single instances of events in a calendar view
+     *
+     * If a calendar is given, it fetches the events for this calendar ;
+     * otherwise, it takes the primary
+     *
+     * @param DateTime $from The date and time when the event starts.
+     * @param DateTime $to The date and time when the event ends.
+     * @param string $filter `$filter` query parameter to give to the request
+     * @param string $orderBy `$orderBy` query, to have an order of elements
+     *
+     * @see https://msdn.microsoft.com/office/office365/APi/calendar-rest-operations#GetCalendarView
+     */
+    public function getCalendarView(
+        Calendar $calendar = null,
+        DateTime $from,
+        DateTime $to,
+        $filter = '',
+        $orderBy = ''
+    ) {
+        $url = 'calendarview';
+
+        if (null !== $calendar) {
+            $url = sprintf('calendars/%s/calendarview', $calendar->getId());
         }
 
-        $result = $response->json();
-        $list = new ArrayCollection;
+        $params = [
+            'startDateTime' => $from->format('Y-m-d\TH:i:s\Z'),
+            'endDateTime' => $to->format('Y-m-d\TH:i:s\Z'),
+        ];
 
-        foreach ($result['value'] as $item) {
-            $list[$item['Id']] = Event::hydrate($item);
+        if (!empty($filter)) {
+            $params['$filter'] = $filter;
         }
 
-        return $list;
+        if (!empty($orderBy)) {
+            $params['$orderBy'] = $orderBy;
+        }
+
+        $params = ['query' => $params];
+
+        return $this->requestEvents($url, $params);
     }
 
     /** {@inheritDoc} */
@@ -100,4 +151,3 @@ class EventApi implements EventApiInterface
     {
     }
 }
-
