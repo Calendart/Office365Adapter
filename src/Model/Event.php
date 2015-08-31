@@ -239,15 +239,17 @@ class Event extends AbstractEvent
      */
     public static function hydrate(array $data, Calendar $calendar = null)
    {
-        if (!isset($data['Id'], $data['Subject'], $data['ChangeKey'])) {
-            throw new InvalidArgumentException(sprintf('Missing at least one of the mandatory properties "Id", "Name", "ChangeKey" ; got ["%s"]', implode('", "', array_keys($data))));
+        if (!isset($data['Id'], $data['ChangeKey'])) {
+            throw new InvalidArgumentException(sprintf('Missing at least one of the mandatory properties "Id", "ChangeKey" ; got ["%s"]', implode('", "', array_keys($data))));
         }
 
         $event = new static($calendar);
 
         $event->id = $data['Id'];
-        $event->name = $data['Subject'];
         $event->etag = $data['ChangeKey'];
+
+        // if subject is not set or is null, we use null as name
+        $event->name = isset($data['Subject']) ? $data['Subject'] : null;
 
         if (!empty($data['BodyPreview'])) {
             $event->description = $data['BodyPreview'];
