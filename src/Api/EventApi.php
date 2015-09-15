@@ -72,7 +72,7 @@ class EventApi implements EventApiInterface
      * @param string $filter `$filter` query parameter to give to the request
      * @param string $orderBy `$orderBy` query, to have an order of elements
      */
-    public function getList(Calendar $calendar = null, $filter = '', $orderBy = '')
+    public function getList(Calendar $calendar = null, $filter = '', $orderBy = '', array $extraParameters = [])
     {
         $url = 'events';
 
@@ -80,7 +80,7 @@ class EventApi implements EventApiInterface
             $url = sprintf('calendars/%s/events', $calendar->getId());
         }
 
-        $params = [];
+        $params = $extraParameters;
 
         if (!empty($filter)) {
             $params['$filter'] = $filter;
@@ -115,7 +115,8 @@ class EventApi implements EventApiInterface
         DateTime $from,
         DateTime $to,
         $filter = '',
-        $orderBy = ''
+        $orderBy = '',
+        array $extraParameters = []
     ) {
         $url = 'calendarview';
 
@@ -136,7 +137,7 @@ class EventApi implements EventApiInterface
             $params['$orderBy'] = $orderBy;
         }
 
-        $params = ['query' => $params];
+        $params = ['query' => array_merge($params, $extraParameters)];
 
         return $this->requestEvents($url, $params);
     }
