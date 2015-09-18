@@ -28,7 +28,7 @@ class WindowsTimezoneTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException \CalendArt\Adapter\Office365\Exception\TimezoneNotFoundException
+     * @expectedException \CalendArt\Adapter\Office365\Exception\InvalidTimezoneException
      */
     public function testGetTimezoneWithUnregisteredTimezone()
     {

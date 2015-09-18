@@ -3,7 +3,6 @@
 namespace CalendArt\Adapter\Office365;
 
 use CalendArt\Adapter\Office365\Exception\InvalidTimezoneException;
-use CalendArt\Adapter\Office365\Exception\TimezoneNotFoundException;
 
 /**
  * Translate a windows timezone to a IANA timezone
@@ -101,14 +100,14 @@ class WindowsTimezone
      */
     public function getTimezone($windowsTimezone)
     {
-        if (!isset(self::$timezone[$windowsTimezone])) {
-            throw new TimezoneNotFoundException(sprintf('windows timezone %s is not registered', $windowsTimezone));
+        if (isset(self::$timezone[$windowsTimezone])) {
+            $windowsTimezone = self::$timezone[$windowsTimezone];
         }
 
-        if (!in_array(self::$timezone[$windowsTimezone], \DateTimeZone::listIdentifiers())) {
-            throw new InvalidTimezoneException(sprintf("the timezone %s does not exists in your installation", self::$timezone[$windowsTimezone]));
+        if (!in_array($windowsTimezone, \DateTimeZone::listIdentifiers())) {
+            throw new InvalidTimezoneException(sprintf("the timezone %s does not exists in your installation", $windowsTimezone));
         }
 
-        return self::$timezone[$windowsTimezone];
+        return $windowsTimezone;
     }
 }
