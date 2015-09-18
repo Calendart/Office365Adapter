@@ -24,7 +24,8 @@ use CalendArt\AbstractEvent,
     CalendArt\EventParticipation as BaseEventParticipation,
 
     CalendArt\Adapter\Office365\ReflectionTrait,
-    CalendArt\Adapter\Office365\Office365Adapter;
+    CalendArt\Adapter\Office365\Office365Adapter,
+    CalendArt\Adapter\Office365\WindowsTimezone;
 
 /**
  * Office365
@@ -238,7 +239,7 @@ class Event extends AbstractEvent
      * @return self
      */
     public static function hydrate(array $data, Calendar $calendar = null)
-   {
+    {
         if (!isset($data['Id'], $data['ChangeKey'])) {
             throw new InvalidArgumentException(sprintf('Missing at least one of the mandatory properties "Id", "ChangeKey" ; got ["%s"]', implode('", "', array_keys($data))));
         }
@@ -262,12 +263,14 @@ class Event extends AbstractEvent
         $event->end = new Datetime($data['End']);
         $event->start = new Datetime($data['Start']);
 
+        $windowsTimezone = new WindowsTimezone();
+
         try {
-            $event->end->setTimezone(new DateTimezone($data['EndTimeZone']));
+            $event->end->setTimezone(new DateTimezone($windowsTimezone->getTimezone($data['EndTimeZone'])));
         } catch (Exception $e) { }
 
         try {
-            $event->start->setTimezone(new DateTimezone($data['StartTimeZone']));
+            $event->start->setTimezone(new DateTimezone($windowsTimezone->getTimezone($data['StartTimeZone'])));
         } catch (Exception $e) { }
 
         $event->recurrence = $data['Recurrence'];
