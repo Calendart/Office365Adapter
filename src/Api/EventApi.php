@@ -17,14 +17,14 @@ use DateTime;
 
 use Doctrine\Common\Collections\ArrayCollection;
 
-use CalendArt\AbstractEvent,
-    CalendArt\Adapter\EventApiInterface,
+use CalendArt\AbstractEvent;
+use CalendArt\Adapter\EventApiInterface;
 
-    CalendArt\Adapter\Office365\Model\Event,
-    CalendArt\Adapter\Office365\Model\Calendar,
+use CalendArt\Adapter\Office365\Model\Event;
+use CalendArt\Adapter\Office365\Model\Calendar;
 
-    CalendArt\Adapter\Office365\Office365Adapter,
-    CalendArt\Adapter\Office365\Exception\ApiErrorException;
+use CalendArt\Adapter\Office365\Office365Adapter;
+use CalendArt\Adapter\Office365\Exception\ApiErrorException;
 
 /**
  * Office365 API for the Calendars

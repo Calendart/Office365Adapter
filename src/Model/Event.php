@@ -11,21 +11,21 @@
 
 namespace CalendArt\Adapter\Office365\Model;
 
-use Datetime,
-    DateTimezone,
+use Datetime;
+use DateTimezone;
 
-    Exception,
-    InvalidArgumentException;
+use Exception;
+use InvalidArgumentException;
 
-use Doctrine\Common\Collections\Collection,
-    Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
+use Doctrine\Common\Collections\ArrayCollection;
 
-use CalendArt\AbstractEvent,
-    CalendArt\EventParticipation as BaseEventParticipation,
+use CalendArt\AbstractEvent;
+use CalendArt\EventParticipation as BaseEventParticipation;
 
-    CalendArt\Adapter\Office365\ReflectionTrait,
-    CalendArt\Adapter\Office365\Office365Adapter,
-    CalendArt\Adapter\Office365\WindowsTimezone;
+use CalendArt\Adapter\Office365\ReflectionTrait;
+use CalendArt\Adapter\Office365\Office365Adapter;
+use CalendArt\Adapter\Office365\WindowsTimezone;
 
 /**
  * Office365

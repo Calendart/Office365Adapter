@@ -11,8 +11,8 @@
 
 namespace CalendArt\Adapter\Office365;
 
-use ReflectionClass,
-    InvalidArgumentException;
+use ReflectionClass;
+use InvalidArgumentException;
 
 /**
  * Basic set of reflection utils

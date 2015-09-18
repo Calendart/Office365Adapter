@@ -13,8 +13,8 @@ namespace CalendArt\Adapter\Office365\Exception;
 
 use ErrorException;
 
-use GuzzleHttp\Message\Response,
-    GuzzleHttp\Exception\ParseException;
+use GuzzleHttp\Message\Response;
+use GuzzleHttp\Exception\ParseException;
 
 /**
  * Whenever the Api returns an unexpected result

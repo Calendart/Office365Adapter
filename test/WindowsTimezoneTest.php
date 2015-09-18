@@ -1,8 +1,6 @@
 <?php
 
-namespace Calendart\Adapter\Office365;
-
-use CalendArt\Adapter\Office365\WindowsTimezone;
+namespace CalendArt\Adapter\Office365;
 
 /**
  * Class WindowsTimezoneTest
