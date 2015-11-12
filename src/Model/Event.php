@@ -303,12 +303,14 @@ class Event extends AbstractEvent
             }
 
             $participation = new EventParticipation($event, $user, $role, EventParticipation::STATUS_NONE);
-            $participation->setStatus(EventParticipation::translateStatus($attendee['Status']['Response']));
-            $participation->setType(EventParticipation::translateType($attendee['Type']));
+            if (isset($attendee['Status'])) {
+                $participation->setStatus(EventParticipation::translateStatus($attendee['Status']['Response']));
 
-            if (EventParticipation::STATUS_NONE !== $participation->getStatus()) {
-                $participation->setAnsweredAt(new Datetime($attendee['Status']['Time']));
+                if (EventParticipation::STATUS_NONE !== $participation->getStatus()) {
+                    $participation->setAnsweredAt(new Datetime($attendee['Status']['Time']));
+                }
             }
+            $participation->setType(EventParticipation::translateType($attendee['Type']));
 
             $user->addEvent($event);
             $event->participations->add($participation);
