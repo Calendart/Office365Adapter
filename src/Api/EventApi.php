@@ -145,6 +145,14 @@ class EventApi implements EventApiInterface
     /** {@inheritDoc} */
     public function get($identifier)
     {
+        $request = $this->guzzle->createRequest('GET', sprintf('events/%s', $identifier), []);
+        $response = $this->guzzle->send($request);
+
+        if (200 > $response->getStatusCode() || 300 <= $response->getStatusCode()) {
+            throw new ApiErrorException($response);
+        }
+
+        return Event::hydrate($response->json());
     }
 
     /** {@inheritDoc} */

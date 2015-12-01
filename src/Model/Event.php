@@ -86,6 +86,9 @@ class Event extends AbstractEvent
     /** @var Recurrence */
     private $recurrence;
 
+    /** @var array */
+    private $raw;
+
     public function __construct(Calendar $calendar = null)
     {
         $this->calendar = $calendar;
@@ -232,6 +235,11 @@ class Event extends AbstractEvent
         return parent::addParticipation($participation);
     }
 
+    public function getRaw()
+    {
+        return $this->raw;
+    }
+
     /**
      * Hydrate a new Event object with data received from Office365 api
      *
@@ -248,6 +256,7 @@ class Event extends AbstractEvent
 
         $event->id = $data['Id'];
         $event->etag = $data['ChangeKey'];
+        $event->raw = $data;
 
         // if subject is not set or is null, we use null as name
         $event->name = isset($data['Subject']) ? $data['Subject'] : null;
