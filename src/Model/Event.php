@@ -265,7 +265,10 @@ class Event extends AbstractEvent
             $event->description = $data['BodyPreview'];
         }
 
-        $event->location = $data['Location']['DisplayName'];
+        if (isset($data['Location']) && isset($data['Location']['DisplayName'])) {
+            $event->location = $data['Location']['DisplayName'];
+        }
+
         $event->createdAt = new Datetime($data['DateTimeCreated']);
         $event->updatedAt = new Datetime($data['DateTimeLastModified']);
 
