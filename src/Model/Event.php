@@ -71,9 +71,6 @@ class Event extends AbstractEvent
     /** @var Datetime */
     private $updatedAt;
 
-    /** @var Attachment */
-    private $attachments = [];
-
     /** @var integer */
     private $importance = self::IMPORTANCE_NORMAL;
 
@@ -89,9 +86,12 @@ class Event extends AbstractEvent
     /** @var array */
     private $raw;
 
+    /** @var boolean */
+    private $hasAttachments = false;
+
     public function __construct(Calendar $calendar = null)
     {
-        $this->calendar = $calendar;
+        $this->calendar= $calendar;
 
         if (null !== $calendar) {
             $calendar->getEvents()->add($this);
@@ -297,6 +297,9 @@ class Event extends AbstractEvent
 
         $event->participations = new ArrayCollection;
 
+        $event->attachments = new ArrayCollection;
+        $event->hasAttachments = $data['HasAttachments'];
+
         //now the fun stuff : the attendees
         foreach ($data['Attendees'] ?: [] as $attendee) {
             // a resource is not an attendee
@@ -326,5 +329,10 @@ class Event extends AbstractEvent
         }
 
         return $event;
+    }
+
+    public function hasAttachments()
+    {
+        return $this->hasAttachments;
     }
 }
