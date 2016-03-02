@@ -41,13 +41,13 @@ class Calendar extends AbstractCalendar
 
     public static function hydrate(array $data)
     {
-        if (!isset($data['Id'], $data['Name'], $data['ChangeKey'])) {
-            throw new InvalidArgumentException(sprintf('Missing at least one of the mandatory properties "Id", "Name", "ChangeKey" ; got ["%s"]', implode('", "', array_keys($data))));
+        if (!isset($data['id'], $data['name'], $data['changeKey'])) {
+            throw new InvalidArgumentException(sprintf('Missing at least one of the mandatory properties "id", "name", "changeKey" ; got ["%s"]', implode('", "', array_keys($data))));
         }
 
-        $calendar = new static($data['Name']);
-        $calendar->id = $data['Id'];
-        $calendar->etag = $data['ChangeKey'];
+        $calendar = new static($data['name']);
+        $calendar->id = $data['id'];
+        $calendar->etag = $data['changeKey'];
 
         return $calendar;
     }

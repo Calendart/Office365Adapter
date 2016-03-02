@@ -38,7 +38,7 @@ class Office365Adapter implements AdapterInterface
     /** @param string $token access token delivered by azure's oauth system */
     public function __construct($token)
     {
-        $this->guzzle = new Guzzle(['base_url' => 'https://outlook.office365.com/api/v1.0/me/',
+        $this->guzzle = new Guzzle(['base_url' => 'https://graph.microsoft.com/v1.0/me/',
                                     'defaults' => ['exceptions' => false,
                                                     'headers' => ['Authorization' => sprintf('Bearer %s', $token),
                                                                   'Content-Type' => 'application/json',
@@ -78,10 +78,10 @@ class Office365Adapter implements AdapterInterface
      */
     public static function buildUser(array $data)
     {
-        $id = sha1($data['EmailAddress']['Address']);
+        $id = sha1($data['emailAddress']['address']);
 
         if (!isset(static::$users[$id])) {
-            static::$users[$id] = User::hydrate($data['EmailAddress']);
+            static::$users[$id] = User::hydrate($data['emailAddress']);
         }
 
         return static::$users[$id];

@@ -57,21 +57,21 @@ class EventParticipation extends BaseEventParticipation
     {
         switch($status) {
             case null:
-            case 'None':
-            case 'NotResponded':
+            case 'none':
+            case 'notResponded':
                 return static::STATUS_NONE;
 
-            case 'TentativelyAccepted':
+            case 'tentativelyAccepted':
                 return static::STATUS_TENTATIVE;
 
-            case 'Accepted':
+            case 'accepted':
                 return static::STATUS_ACCEPTED;
 
-            case 'Declined':
+            case 'declined':
                 return static::STATUS_DECLINED;
 
             default:
-                throw new InvalidArgumentException(sprintf('Wrong status sent. Expected one of [\'None\', \'NotResponded\', \'TentativelyAccepted\', \'Accepted\', \'Declined\'], had "%s"', $status));
+                throw new InvalidArgumentException(sprintf('Wrong status sent. Expected one of [\'none\', \'notResponded\', \'tentativelyAccepted\', \'accepted\', \'declined\'], had "%s"', $status));
         }
     }
 

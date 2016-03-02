@@ -12,12 +12,11 @@
 namespace CalendArt\Adapter\Office365\Model;
 
 use Datetime;
-use DateTimezone;
+use DateTimeZone;
 
 use Exception;
 use InvalidArgumentException;
 
-use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\ArrayCollection;
 
 use CalendArt\AbstractEvent;
@@ -248,62 +247,67 @@ class Event extends AbstractEvent
      */
     public static function hydrate(array $data, Calendar $calendar = null)
     {
-        if (!isset($data['Id'], $data['ChangeKey'])) {
-            throw new InvalidArgumentException(sprintf('Missing at least one of the mandatory properties "Id", "ChangeKey" ; got ["%s"]', implode('", "', array_keys($data))));
+        if (!isset($data['id'], $data['changeKey'])) {
+            throw new InvalidArgumentException(sprintf('Missing at least one of the mandatory properties "id", "changeKey" ; got ["%s"]', implode('", "', array_keys($data))));
         }
 
         $event = new static($calendar);
 
-        $event->id = $data['Id'];
-        $event->etag = $data['ChangeKey'];
+        $event->id = $data['id'];
+        $event->etag = $data['changeKey'];
         $event->raw = $data;
 
         // if subject is not set or is null, we use null as name
-        $event->name = isset($data['Subject']) ? $data['Subject'] : null;
+        $event->name = isset($data['subject']) ? $data['subject'] : null;
 
-        if (!empty($data['BodyPreview'])) {
-            $event->description = $data['BodyPreview'];
+        if (!empty($data['bodyPreview'])) {
+            $event->description = $data['bodyPreview'];
         }
 
-        if (isset($data['Location']) && isset($data['Location']['DisplayName'])) {
-            $event->location = $data['Location']['DisplayName'];
+        if (isset($data['location']) && isset($data['location']['displayName'])) {
+            $event->location = $data['location']['displayName'];
         }
 
-        $event->createdAt = new Datetime($data['DateTimeCreated']);
-        $event->updatedAt = new Datetime($data['DateTimeLastModified']);
+        $event->createdAt = new Datetime($data['createdDateTime']);
+        $event->updatedAt = new Datetime($data['lastModifiedDateTime']);
 
-        $event->end = new Datetime($data['End']);
-        $event->start = new Datetime($data['Start']);
+        if (isset($data['start']) && isset($data['start']['dateTime'])) {
+            $event->start = new Datetime($data['start']['dateTime']);
+        }
+
+        if (isset($data['end']) && isset($data['end']['dateTime'])) {
+            $event->end = new Datetime($data['end']['dateTime']);
+        }
 
         $windowsTimezone = new WindowsTimezone();
 
         try {
-            $event->end->setTimezone(new DateTimezone($windowsTimezone->getTimezone($data['EndTimeZone'])));
+            $event->end->setTimezone(new DateTimeZone($windowsTimezone->getTimezone($data['end']['timeZone'])));
         } catch (Exception $e) { }
 
         try {
-            $event->start->setTimezone(new DateTimezone($windowsTimezone->getTimezone($data['StartTimeZone'])));
+            $event->start->setTimezone(new DateTimeZone($windowsTimezone->getTimezone($data['start']['timeZone'])));
         } catch (Exception $e) { }
 
-        $event->recurrence = $data['Recurrence'];
-        $event->allDay = true === $data['IsAllDay'];
-        $event->cancelled = true === $data['IsCancelled'];
+        $event->recurrence = $data['recurrence'];
+        $event->allDay = true === $data['isAllDay'];
+        $event->cancelled = true === $data['isCancelled'];
 
-        $event->categories = $data['Categories'];
+        $event->categories = $data['categories'];
 
-        $event->importance = self::translateConstantToValue('IMPORTANCE_', $data['Importance']);
-        $event->status = self::translateConstantToValue('STATUS_', $data['ShowAs']);
-        $event->type = self::translateConstantToValue('TYPE_', $data['Type']);
+        $event->importance = self::translateConstantToValue('IMPORTANCE_', $data['importance']);
+        $event->status = self::translateConstantToValue('STATUS_', $data['showAs']);
+        $event->type = self::translateConstantToValue('TYPE_', $data['type']);
 
-        $event->owner = Office365Adapter::buildUser($data['Organizer']);
+        $event->owner = Office365Adapter::buildUser($data['organizer']);
         $event->owner->addEvent($event);
 
         $event->participations = new ArrayCollection;
 
         //now the fun stuff : the attendees
-        foreach ($data['Attendees'] ?: [] as $attendee) {
+        foreach ($data['attendees'] ?: [] as $attendee) {
             // a resource is not an attendee
-            if ('Resource' === $attendee['Type']) {
+            if ('resource' === $attendee['type']) {
                 continue;
             }
 
@@ -315,14 +319,14 @@ class Event extends AbstractEvent
             }
 
             $participation = new EventParticipation($event, $user, $role, EventParticipation::STATUS_NONE);
-            if (isset($attendee['Status'])) {
-                $participation->setStatus(EventParticipation::translateStatus($attendee['Status']['Response']));
+            if (isset($attendee['status'])) {
+                $participation->setStatus(EventParticipation::translateStatus($attendee['status']['response']));
 
                 if (EventParticipation::STATUS_NONE !== $participation->getStatus()) {
-                    $participation->setAnsweredAt(new Datetime($attendee['Status']['Time']));
+                    $participation->setAnsweredAt(new Datetime($attendee['status']['time']));
                 }
             }
-            $participation->setType(EventParticipation::translateType($attendee['Type']));
+            $participation->setType(EventParticipation::translateType($attendee['type']));
 
             $user->addEvent($event);
             $event->participations->add($participation);
