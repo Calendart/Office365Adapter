@@ -15,7 +15,6 @@ use GuzzleHttp\Client as Guzzle;
 
 use Doctrine\Common\Collections\ArrayCollection;
 
-use CalendArt\AbstractCalendar;
 use CalendArt\Adapter\CalendarApiInterface;
 
 use CalendArt\Adapter\Office365\Model\Calendar;
@@ -55,7 +54,7 @@ class CalendarApi implements CalendarApiInterface
         $list = new ArrayCollection;
 
         foreach ($result['value'] as $item) {
-            $list[$item['Id']] = Calendar::hydrate($item);
+            $list[$item['id']] = Calendar::hydrate($item);
         }
 
         return $list;

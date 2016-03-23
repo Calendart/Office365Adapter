@@ -58,7 +58,7 @@ class EventApi implements EventApiInterface
         $list = new ArrayCollection;
 
         foreach ($result['value'] as $item) {
-            $list[$item['Id']] = Event::hydrate($item);
+            $list[$item['id']] = Event::hydrate($item);
         }
 
         return $list;

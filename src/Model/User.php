@@ -11,6 +11,8 @@
 
 namespace CalendArt\Adapter\Office365\Model;
 
+use InvalidArgumentException;
+
 use CalendArt\User as BaseUser;
 
 /**
@@ -45,14 +47,14 @@ class User extends BaseUser
 
     public static function hydrate(array $data)
     {
-        if (!isset($data['Address'], $data['Name'])) {
-            throw new InvalidArgumentException(sprintf('Missing some required key (required : [\'Address\', \'Name\'], got [\'%s\'])', array_keys($data)));
+        if (!isset($data['address'], $data['name'])) {
+            throw new InvalidArgumentException(sprintf('Missing some required key (required : [\'address\', \'name\'], got [\'%s\'])', array_keys($data)));
         }
 
-        $user = new static($data['Name'], $data['Address']);
+        $user = new static($data['name'], $data['address']);
 
         $user->raw = $data;
-        $user->id = sha1($data['Address']);
+        $user->id = sha1($data['address']);
 
         return $user;
     }
