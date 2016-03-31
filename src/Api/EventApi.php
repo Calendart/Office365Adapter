@@ -14,6 +14,7 @@ namespace CalendArt\Adapter\Office365\Api;
 use GuzzleHttp\Client as Guzzle;
 
 use DateTime;
+use InvalidArgumentException;
 
 use Doctrine\Common\Collections\ArrayCollection;
 
@@ -158,5 +159,29 @@ class EventApi implements EventApiInterface
     /** {@inheritDoc} */
     public function persist(AbstractEvent $event)
     {
+        if (!$event instanceof Event) {
+            throw new InvalidArgumentException('Wrong event provided, expected an office event');
+        }
+
+        $params = [
+            'headers' => ['Content-Type' => 'application/json'],
+            'body' => json_encode($event->export())
+        ];
+
+        $method = 'POST';
+        $url = sprintf('calendars/%s/events', $event->getCalendar()->getId());
+        if (null !== $event->getId()) {
+            $method = 'PATCH';
+            $url = sprintf('%s/%s', $url, $event->getId());
+        }
+
+        $request = $this->guzzle->createRequest($method, $url, $params);
+        $response = $this->guzzle->send($request);
+
+        if (200 > $response->getStatusCode() || 300 <= $response->getStatusCode()) {
+            throw new ApiErrorException($response);
+        }
+
+        return Event::hydrate($response->json());
     }
 }
