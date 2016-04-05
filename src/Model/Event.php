@@ -271,23 +271,25 @@ class Event extends AbstractEvent
         $event->createdAt = new Datetime($data['createdDateTime']);
         $event->updatedAt = new Datetime($data['lastModifiedDateTime']);
 
+        $windowsTimezone = new WindowsTimezone();
+        $startTimeZone = new DateTimeZone('UTC');
+        $endTimeZone = new DateTimeZone('UTC');
+
+        try {
+            $endTimeZone = new DateTimeZone($windowsTimezone->getTimezone($data['end']['timeZone']));
+        } catch (Exception $e) { }
+
+        try {
+            $startTimeZone = new DateTimeZone($windowsTimezone->getTimezone($data['start']['timeZone']));
+        } catch (Exception $e) { }
+
         if (isset($data['start']) && isset($data['start']['dateTime'])) {
-            $event->start = new Datetime($data['start']['dateTime']);
+            $event->start = new Datetime($data['start']['dateTime'], $startTimeZone);
         }
 
         if (isset($data['end']) && isset($data['end']['dateTime'])) {
-            $event->end = new Datetime($data['end']['dateTime']);
+            $event->end = new Datetime($data['end']['dateTime'], $endTimeZone);
         }
-
-        $windowsTimezone = new WindowsTimezone();
-
-        try {
-            $event->end->setTimezone(new DateTimeZone($windowsTimezone->getTimezone($data['end']['timeZone'])));
-        } catch (Exception $e) { }
-
-        try {
-            $event->start->setTimezone(new DateTimeZone($windowsTimezone->getTimezone($data['start']['timeZone'])));
-        } catch (Exception $e) { }
 
         $event->recurrence = $data['recurrence'];
         $event->allDay = true === $data['isAllDay'];
@@ -303,9 +305,10 @@ class Event extends AbstractEvent
         $event->owner->addEvent($event);
 
         $event->participations = new ArrayCollection;
+        $attendees = isset($data['attendees']) ? $data['attendees'] : [];
 
         //now the fun stuff : the attendees
-        foreach ($data['attendees'] ?: [] as $attendee) {
+        foreach ($attendees as $attendee) {
             // a resource is not an attendee
             if ('resource' === $attendee['type']) {
                 continue;
