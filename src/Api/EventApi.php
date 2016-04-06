@@ -22,6 +22,7 @@ use CalendArt\Adapter\EventApiInterface;
 
 use CalendArt\Adapter\Office365\Model\Event;
 use CalendArt\Adapter\Office365\Model\Calendar;
+use CalendArt\Adapter\Office365\Model\Attachment;
 
 use CalendArt\Adapter\Office365\Office365Adapter;
 use CalendArt\Adapter\Office365\Exception\ApiErrorException;
@@ -152,11 +153,61 @@ class EventApi implements EventApiInterface
             throw new ApiErrorException($response);
         }
 
-        return Event::hydrate($response->json());
+        $event = Event::hydrate($response->json());
+
+        if ($event->hasAttachments()) {
+            foreach ($this->getAttachments($identifier) as $attachment) {
+                $event->addAttachment($attachment);
+            }
+        }
+
+        return $event;
     }
 
     /** {@inheritDoc} */
     public function persist(AbstractEvent $event)
     {
+    }
+
+    /**
+     * Get the attachments collection of an event
+     *
+     * @param string identifier of the event
+     * @param string $filter `$filter` query parameter to give to the request
+     * @param string $orderBy `$orderBy` query, to have an order of elements
+     *
+     * @see https://msdn.microsoft.com/office/office365/APi/calendar-rest-operations#GetCalendarView
+     */
+    public function getAttachments($identifier, $filter = '', $orderBy = '', array $extraParameters = [])
+    {
+        $url = sprintf('events/%s/attachments', $identifier);
+
+        $params = [];
+
+        if (!empty($filter)) {
+            $params['$filter'] = $filter;
+        }
+
+        if (!empty($orderBy)) {
+            $params['$orderBy'] = $orderBy;
+        }
+
+        $params = ['query' => array_merge($params, $extraParameters)];
+
+        $request = $this->guzzle->createRequest('GET', $url, $params);
+        $response = $this->guzzle->send($request);
+
+        if (200 > $response->getStatusCode() || 300 <= $response->getStatusCode()) {
+            throw new ApiErrorException($response);
+        }
+
+        $result = $response->json();
+        $attachments = new ArrayCollection;
+
+        foreach ($result['value'] as $attachment) {
+            $attachments[$attachment['Id']] = Attachment::hydrate($attachment);
+        }
+
+        return $attachments;
     }
 }
