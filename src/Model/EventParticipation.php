@@ -78,5 +78,12 @@ class EventParticipation extends BaseEventParticipation
     public static function translateType($type) {
         return self::translateConstantToValue('TYPE_', $type);
     }
+
+    public function export()
+    {
+        return [
+            'emailAddress' => ['address' => $this->getUser()->getEmail()]
+        ];
+    }
 }
 

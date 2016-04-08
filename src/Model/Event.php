@@ -53,7 +53,7 @@ class Event extends AbstractEvent
     const TYPE_SERIES_MASTER = 3;
 
     /** @var string */
-    private $id;
+    protected $id;
 
     /** @var string[] */
     private $categories = [];
@@ -62,7 +62,7 @@ class Event extends AbstractEvent
     private $status = self::STATUS_UNKNOWN;
 
     /** @var string */
-    private $etag;
+    protected $etag;
 
     /** @var Datetime */
     private $createdAt;
@@ -95,6 +95,8 @@ class Event extends AbstractEvent
         if (null !== $calendar) {
             $calendar->getEvents()->add($this);
         }
+
+        $this->participations = new ArrayCollection;
     }
 
     public function getId()
@@ -336,5 +338,32 @@ class Event extends AbstractEvent
         }
 
         return $event;
+    }
+
+    public function export()
+    {
+        $export = [
+            'subject' => $this->getName(),
+            'bodyPreview' => $this->getDescription(),
+            'changeKey' => $this->getEtag(),
+            'attendees' => $this->getParticipations()->map(function (EventParticipation $participation) {
+                return $participation->export();
+            })->toArray()
+        ];
+
+        if (null !== $this->getStart()) {
+            $export['start'] = ['dateTime' => $this->getStart()->format('c'), 'timeZone' => 'UTC'];
+        }
+
+        if (null !== $this->getEnd()) {
+            $export['end'] = ['dateTime' => $this->getEnd()->format('c'), 'timeZone' => 'UTC'];
+        }
+
+        if (null !== $this->getId()) {
+            $export['id'] = $this->getId();
+        }
+
+
+        return $export;
     }
 }
