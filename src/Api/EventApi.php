@@ -157,7 +157,7 @@ class EventApi implements EventApiInterface
     }
 
     /** {@inheritDoc} */
-    public function persist(AbstractEvent $event)
+    public function persist(AbstractEvent $event, array $options = [])
     {
         if (!$event instanceof Event) {
             throw new InvalidArgumentException('Wrong event provided, expected an office event');
