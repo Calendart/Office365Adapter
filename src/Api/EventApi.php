@@ -25,7 +25,6 @@ use CalendArt\Adapter\Office365\Model\Event;
 use CalendArt\Adapter\Office365\Model\Calendar;
 
 use CalendArt\Adapter\Office365\Office365Adapter;
-use CalendArt\Adapter\Office365\Exception\ApiErrorException;
 
 /**
  * Office365 API for the Calendars
@@ -34,6 +33,8 @@ use CalendArt\Adapter\Office365\Exception\ApiErrorException;
  */
 class EventApi implements EventApiInterface
 {
+    use ResponseHandler;
+
     /** @var Guzzle Guzzle Http Client to use */
     private $guzzle;
 
@@ -51,9 +52,7 @@ class EventApi implements EventApiInterface
         $request = $this->guzzle->createRequest('GET', $url, $params);
         $response = $this->guzzle->send($request);
 
-        if (200 > $response->getStatusCode() || 300 <= $response->getStatusCode()) {
-            throw new ApiErrorException($response);
-        }
+        $this->handleResponse($response);
 
         $result = $response->json();
         $list = new ArrayCollection;
@@ -149,9 +148,7 @@ class EventApi implements EventApiInterface
         $request = $this->guzzle->createRequest('GET', sprintf('events/%s', $identifier), []);
         $response = $this->guzzle->send($request);
 
-        if (200 > $response->getStatusCode() || 300 <= $response->getStatusCode()) {
-            throw new ApiErrorException($response);
-        }
+        $this->handleResponse($response);
 
         return Event::hydrate($response->json());
     }
