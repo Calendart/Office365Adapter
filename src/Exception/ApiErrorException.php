@@ -13,21 +13,25 @@ namespace CalendArt\Adapter\Office365\Exception;
 
 use ErrorException;
 
-use GuzzleHttp\Message\Response;
+use GuzzleHttp\Message\ResponseInterface;
 use GuzzleHttp\Exception\ParseException;
+
+use CalendArt\Exception\ApiErrorInterface;
 
 /**
  * Whenever the Api returns an unexpected result
  *
  * @author Baptiste Clavié <baptiste@wisembly.com>
  */
-class ApiErrorException extends ErrorException
+abstract class ApiErrorException extends ErrorException implements ApiErrorInterface
 {
-    public function __construct(Response $response)
+    private $details;
+
+    public function __construct(ResponseInterface $response)
     {
         try {
             $this->details = $response->json();
-            $message = $this->details['error']['message'];
+            $message = isset($this->details['error']['message']) ? $this->details['error']['message'] : $response->getReasonPhrase();
         } catch (ParseException $e) {
             $message = $response->getReasonPhrase();
         }
@@ -40,4 +44,3 @@ class ApiErrorException extends ErrorException
         return $this->details;
     }
 }
-
