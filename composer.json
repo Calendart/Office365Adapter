@@ -23,7 +23,7 @@
     },
 
     "require-dev": {
-        "calendart/calendart": "~1.4",
+        "calendart/calendart": "dev-master"
     },
 
     "autoload": {
