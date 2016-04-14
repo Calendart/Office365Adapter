@@ -16,7 +16,8 @@ cache:
         - $HOME/.composer/cache
 
 before_script:
-    - composer install --prefer-dist -o
+    - composer require --dev --no-update jakub-onderka/php-parallel-lint
+    - composer install --prefer-dist -o --no-interaction
 
 script:
     - vendor/bin/parallel-lint src/ test/

@@ -23,9 +23,7 @@
     },
 
     "require-dev": {
-        "phpunit/phpunit": "~4.0",
         "calendart/calendart": "~1.4",
-        "jakub-onderka/php-parallel-lint": "^0.9.0"
     },
 
     "autoload": {
