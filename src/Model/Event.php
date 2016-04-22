@@ -303,8 +303,10 @@ class Event extends AbstractEvent
         $event->status = self::translateConstantToValue('STATUS_', $data['showAs']);
         $event->type = self::translateConstantToValue('TYPE_', $data['type']);
 
-        $event->owner = Office365Adapter::buildUser($data['organizer']);
-        $event->owner->addEvent($event);
+        if (isset($data['organizer'])) {
+            $event->owner = Office365Adapter::buildUser($data['organizer']);
+            $event->owner->addEvent($event);
+        }
 
         $event->participations = new ArrayCollection;
         $attendees = isset($data['attendees']) ? $data['attendees'] : [];
@@ -319,7 +321,7 @@ class Event extends AbstractEvent
             $user = Office365Adapter::buildUser($attendee);
             $role = EventParticipation::ROLE_PARTICIPANT;
 
-            if ($event->owner->getId() === $user->getId()) {
+            if (null !== $event->owner && $event->owner->getId() === $user->getId()) {
                 $role |= EventParticipation::ROLE_MANAGER;
             }
 
