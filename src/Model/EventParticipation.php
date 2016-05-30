@@ -70,8 +70,11 @@ class EventParticipation extends BaseEventParticipation
             case 'declined':
                 return static::STATUS_DECLINED;
 
+            case 'organizer':
+                return static::STATUS_ORGANIZER;
+
             default:
-                throw new InvalidArgumentException(sprintf('Wrong status sent. Expected one of [\'none\', \'notResponded\', \'tentativelyAccepted\', \'accepted\', \'declined\'], had "%s"', $status));
+                throw new InvalidArgumentException(sprintf('Wrong status sent. Expected one of [\'none\', \'notResponded\', \'tentativelyAccepted\', \'accepted\', \'declined\', \'organizer\'], had "%s"', $status));
         }
     }
 
