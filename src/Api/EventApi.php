@@ -11,6 +11,7 @@
 
 namespace CalendArt\Adapter\Office365\Api;
 
+use CalendArt\Adapter\Office365\Exception\BadRequestException;
 use GuzzleHttp\Client as Guzzle;
 
 use DateTime;
@@ -176,7 +177,7 @@ class EventApi implements EventApiInterface
         $response = $this->guzzle->send($request);
 
         if (200 > $response->getStatusCode() || 300 <= $response->getStatusCode()) {
-            throw new ApiErrorException($response);
+            throw new BadRequestException($response);
         }
 
         return Event::hydrate($response->json());
