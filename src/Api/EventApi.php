@@ -175,9 +175,7 @@ class EventApi implements EventApiInterface
         $request = $this->guzzle->createRequest($method, $url, $params);
         $response = $this->guzzle->send($request);
 
-        if (200 > $response->getStatusCode() || 300 <= $response->getStatusCode()) {
-            throw new ApiErrorException($response);
-        }
+        $this->handleResponse($response);
 
         return Event::hydrate($response->json());
     }
