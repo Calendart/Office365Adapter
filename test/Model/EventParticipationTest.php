@@ -1,8 +1,6 @@
 <?php
 
 namespace CalendArt\Adapter\Office365\Model;
-use CalendArt\AbstractEvent;
-use CalendArt\User;
 
 /**
  * Class EventParticipationTest
@@ -16,8 +14,8 @@ class EventParticipationTest extends \PHPUnit_Framework_TestCase
      */
     public function testSetStatus($status)
     {
-        $event = $this->prophesize(AbstractEvent::class);
-        $user = $this->prophesize(User::class);
+        $event = $this->prophesize("CalendArt\\AbstractEvent");
+        $user = $this->prophesize("CalendArt\\User");
         $participation = new EventParticipation($event->reveal(), $user->reveal());
         $participation->setStatus($status);
     }
@@ -38,8 +36,8 @@ class EventParticipationTest extends \PHPUnit_Framework_TestCase
      */
     public function testSetStatusWithWrongStatusShouldThrowAnException()
     {
-        $event = $this->prophesize(AbstractEvent::class);
-        $user = $this->prophesize(User::class);
+        $event = $this->prophesize("CalendArt\\AbstractEvent");
+        $user = $this->prophesize("CalendArt\\User");
         $participation = new EventParticipation($event->reveal(), $user->reveal());
         $participation->setStatus(42);
     }
