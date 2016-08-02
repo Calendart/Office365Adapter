@@ -50,7 +50,7 @@ class EventParticipation extends BaseEventParticipation
     /** {@inheritDoc} */
     public static function getAvailableStatuses()
     {
-        return parent::getAvailableStatuses() + [static::STATUS_NONE, static::STATUS_ORGANIZER];
+        return array_merge(parent::getAvailableStatuses(), [static::STATUS_NONE, static::STATUS_ORGANIZER]);
     }
 
     public static function translateStatus($status)
