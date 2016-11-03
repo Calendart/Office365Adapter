@@ -16,23 +16,18 @@
 
     "require": {
         "php": ">=5.4.0",
+        
+        "calendart/calendart": "^1.6",
 
         "psr/log": "~1.0",
-        "doctrine/collections": "~1.0",
-        "guzzlehttp/guzzle": "~4.1"
-    },
-
-    "require-dev": {
-        "calendart/calendart": "dev-master"
+        "doctrine/collections": "^1.0",
+        "guzzlehttp/guzzle": "^4.1"
     },
 
     "autoload": {
         "psr-4": {
             "CalendArt\\Adapter\\Office365\\": ["src/", "test/"]
         }
-    },
-
-    "minimum-stability": "dev",
-    "prefer-stable": true
+    }
 }
 
