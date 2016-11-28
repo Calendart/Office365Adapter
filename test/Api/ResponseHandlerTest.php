@@ -2,7 +2,7 @@
 
 namespace CalendArt\Adapter\Office365\Api;
 
-use GuzzleHttp\Message\ResponseInterface;
+use Psr\Http\Message\ResponseInterface;
 
 class ResponseHandlerTest extends \PHPUnit_Framework_TestCase
 {
@@ -11,7 +11,7 @@ class ResponseHandlerTest extends \PHPUnit_Framework_TestCase
 
     protected function setUp()
     {
-        $this->response = $this->prophesize('GuzzleHttp\Message\ResponseInterface');
+        $this->response = $this->prophesize(ResponseInterface::class);
         $this->api = new Api;
     }
 
@@ -32,7 +32,7 @@ class ResponseHandlerTest extends \PHPUnit_Framework_TestCase
         $this->setExpectedException($exception);
 
         $this->response->getStatusCode()->shouldBeCalled()->willReturn($statusCode);
-        $this->response->json()->shouldBeCalled()->willReturn(['error' => ['message' => 'foo']]);
+        $this->response->getBody()->shouldBeCalled()->willReturn(json_encode(['error' => ['message' => 'foo']]));
         $this->api->get($this->response->reveal());
     }
 

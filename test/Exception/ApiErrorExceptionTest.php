@@ -2,17 +2,16 @@
 
 namespace CalendArt\Adapter\Office365;
 
-use GuzzleHttp\Message\ResponseInterface;
-use GuzzleHttp\Exception\ParseException;
+use Psr\Http\Message\ResponseInterface;
 
 use CalendArt\Adapter\Office365\Exception\BadRequestException;
 
 class ApiErrorExceptionTest extends \PHPUnit_Framework_TestCase
 {
-    public function testConstructWithParseException()
+    public function testConstructWithBadFormat()
     {
-        $response = $this->prophesize('GuzzleHttp\Message\ResponseInterface');
-        $response->json()->shouldBeCalled()->willThrow(new ParseException);
+        $response = $this->prophesize(ResponseInterface::class);
+        $response->getBody()->shouldBeCalled()->willReturn('bad');
         $response->getStatusCode()->shouldBeCalled()->willReturn(400);
         $response->getReasonPhrase()->shouldBeCalled()->willReturn('Invalid Argument');
 
@@ -23,8 +22,8 @@ class ApiErrorExceptionTest extends \PHPUnit_Framework_TestCase
 
     public function testConstructWithUnexceptedFormat()
     {
-        $response = $this->prophesize('GuzzleHttp\Message\ResponseInterface');
-        $response->json()->shouldBeCalled()->willReturn(['error' => []]);
+        $response = $this->prophesize(ResponseInterface::class);
+        $response->getBody()->shouldBeCalled()->willReturn(json_encode(['error' => []]));
         $response->getStatusCode()->shouldBeCalled()->willReturn(400);
         $response->getReasonPhrase()->shouldBeCalled()->willReturn('Invalid Argument');
 
@@ -35,8 +34,8 @@ class ApiErrorExceptionTest extends \PHPUnit_Framework_TestCase
 
     public function testConstructWithExceptedFormat()
     {
-        $response = $this->prophesize('GuzzleHttp\Message\ResponseInterface');
-        $response->json()->shouldBeCalled()->willReturn(['error' => ['message' => 'Api Message']]);
+        $response = $this->prophesize(ResponseInterface::class);
+        $response->getBody()->shouldBeCalled()->willReturn(json_encode(['error' => ['message' => 'Api Message']]));
         $response->getStatusCode()->shouldBeCalled()->willReturn(400);
         $response->getReasonPhrase()->shouldNotBeCalled();
 
