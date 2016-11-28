@@ -13,8 +13,7 @@ namespace CalendArt\Adapter\Office365\Exception;
 
 use ErrorException;
 
-use GuzzleHttp\Message\ResponseInterface;
-use GuzzleHttp\Exception\ParseException;
+use Psr\Http\Message\ResponseInterface;
 
 use CalendArt\Exception\ApiErrorInterface;
 
@@ -29,12 +28,8 @@ abstract class ApiErrorException extends ErrorException implements ApiErrorInter
 
     public function __construct(ResponseInterface $response)
     {
-        try {
-            $this->details = $response->json();
-            $message = isset($this->details['error']['message']) ? $this->details['error']['message'] : $response->getReasonPhrase();
-        } catch (ParseException $e) {
-            $message = $response->getReasonPhrase();
-        }
+        $this->details = json_decode($response->getBody(), true);
+        $message = isset($this->details['error']['message']) ? $this->details['error']['message'] : $response->getReasonPhrase();
 
         parent::__construct(sprintf('The request failed and returned an invalid status code ("%d") : %s', $response->getStatusCode(), $message), $response->getStatusCode());
     }

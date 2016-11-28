@@ -2,7 +2,7 @@
 
 namespace CalendArt\Adapter\Office365\Api;
 
-use GuzzleHttp\Message\ResponseInterface;
+use Psr\Http\Message\ResponseInterface;
 
 use CalendArt\Adapter\Office365\Exception;
 
