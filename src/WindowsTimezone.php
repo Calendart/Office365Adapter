@@ -67,7 +67,7 @@ class WindowsTimezone
         'Central Asia Standard Time'                => 'Asia/Almaty',
         'Sri Lanka Standard Time'                   => 'Asia/Colombo',
         'N. Central Asia Standard Time'             => 'Asia/Novosibirsk',
-        'Myanmar Standard Time'                     => 'Asia/Rangoon',
+        'Myanmar Standard Time'                     => 'Asia/Yangon',
         'S.E. Asia Standard Time'                   => 'Asia/Bangkok',
         'North Asia Standard Time'                  => 'Asia/Krasnoyarsk',
         'China Standard Time'                       => 'Asia/Shanghai',
