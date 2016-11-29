@@ -15,13 +15,24 @@
     ],
 
     "require": {
-        "php": ">=5.4.0",
-        
+        "php": ">=5.5.0",
+
         "calendart/calendart": "^1.6",
 
-        "psr/log": "~1.0",
+        "psr/log": "^1.0",
         "doctrine/collections": "^1.0",
-        "guzzlehttp/guzzle": "^4.1"
+
+        "php-http/client-implementation": "^1.0",
+
+        "php-http/httplug": "^1.1",
+        "php-http/message": "^1.1",
+        "php-http/message-factory": "^1.0",
+        "php-http/client-common": "^1.4",
+        "php-http/discovery": "^1.1"
+    },
+
+    "require-dev": {
+        "php-http/guzzle6-adapter": "^1.1"
     },
 
     "autoload": {

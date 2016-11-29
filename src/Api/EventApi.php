@@ -11,8 +11,6 @@
 
 namespace CalendArt\Adapter\Office365\Api;
 
-use GuzzleHttp\Client as Guzzle;
-
 use DateTime;
 use InvalidArgumentException;
 
@@ -33,28 +31,17 @@ use CalendArt\Adapter\Office365\Office365Adapter;
  */
 class EventApi implements EventApiInterface
 {
-    use ResponseHandler;
-
-    /** @var Guzzle Guzzle Http Client to use */
-    private $guzzle;
-
     /** @var Office365Adapter Office365 Adapter used */
     private $adapter;
 
-    public function __construct(Guzzle $client, Office365Adapter $adapter)
+    public function __construct(Office365Adapter $adapter)
     {
-        $this->guzzle  = $client;
         $this->adapter = $adapter;
     }
 
-    private function requestEvents($url, array $params = [])
+    private function requestEvents($url, array $headers = [])
     {
-        $request = $this->guzzle->createRequest('GET', $url, $params);
-        $response = $this->guzzle->send($request);
-
-        $this->handleResponse($response);
-
-        $result = $response->json();
+        $result = $this->adapter->sendRequest('get', $url, $headers);
         $list = new ArrayCollection;
 
         foreach ($result['value'] as $item) {
@@ -77,7 +64,7 @@ class EventApi implements EventApiInterface
         $url = 'events';
 
         if (null !== $calendar) {
-            $url = sprintf('calendars/%s/events', $calendar->getId());
+            $url = sprintf('/calendars/%s/events', $calendar->getId());
         }
 
         $params = $extraParameters;
@@ -121,7 +108,7 @@ class EventApi implements EventApiInterface
         $url = 'calendarview';
 
         if (null !== $calendar) {
-            $url = sprintf('calendars/%s/calendarview', $calendar->getId());
+            $url = sprintf('/calendars/%s/calendarview', $calendar->getId());
         }
 
         $params = [
@@ -145,12 +132,8 @@ class EventApi implements EventApiInterface
     /** {@inheritDoc} */
     public function get($identifier)
     {
-        $request = $this->guzzle->createRequest('GET', sprintf('events/%s', $identifier), []);
-        $response = $this->guzzle->send($request);
-
-        $this->handleResponse($response);
-
-        return Event::hydrate($response->json());
+        $result = $this->adapter->sendRequest('get', sprintf('/events/%s', $identifier));
+        return Event::hydrate($result);
     }
 
     /** {@inheritDoc} */
@@ -160,23 +143,14 @@ class EventApi implements EventApiInterface
             throw new InvalidArgumentException('Wrong event provided, expected an office event');
         }
 
-        $params = [
-            'headers' => ['Content-Type' => 'application/json'],
-            'body' => json_encode($event->export())
-        ];
-
         $method = 'POST';
-        $url = sprintf('calendars/%s/events', $event->getCalendar()->getId());
+        $url = sprintf('/calendars/%s/events', $event->getCalendar()->getId());
         if (null !== $event->getId()) {
             $method = 'PATCH';
             $url = sprintf('%s/%s', $url, $event->getId());
         }
 
-        $request = $this->guzzle->createRequest($method, $url, $params);
-        $response = $this->guzzle->send($request);
-
-        $this->handleResponse($response);
-
-        return Event::hydrate($response->json());
+        $result = $this->adapter->sendRequest($method, $url, [], json_encode($event->export()));
+        return Event::hydrate($result);
     }
 }

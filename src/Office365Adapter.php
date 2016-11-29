@@ -11,12 +11,28 @@
 
 namespace CalendArt\Adapter\Office365;
 
-use GuzzleHttp\Client as Guzzle;
+use Http\Client\HttpClient;
+
+use Http\Client\Common\PluginClient;
+use Http\Client\Common\Plugin\BaseUriPlugin;
+use Http\Client\Common\Plugin\RedirectPlugin;
+use Http\Client\Common\Plugin\HeaderDefaultsPlugin;
+use Http\Client\Common\Plugin\ContentLengthPlugin;
+use Http\Client\Common\Plugin\AuthenticationPlugin;
+
+use Http\Message\UriFactory;
+use Http\Message\MessageFactory;
+use Http\Message\Authentication\Bearer;
+
+use Http\Discovery\HttpClientDiscovery;
+use Http\Discovery\MessageFactoryDiscovery;
+use Http\Discovery\UriFactoryDiscovery;
 
 use CalendArt\Adapter\AdapterInterface;
 
 use CalendArt\Adapter\Office365\Api;
 use CalendArt\Adapter\Office365\Model\User;
+use CalendArt\Adapter\Office365\Api\ResponseHandler;
 
 /**
  * Office365 Adapter - He knows how to dialog with office 365's calendars !
@@ -29,20 +45,43 @@ use CalendArt\Adapter\Office365\Model\User;
  */
 class Office365Adapter implements AdapterInterface
 {
-    /** @var Guzzle */
-    protected $guzzle;
+    use ResponseHandler;
+
+    /** @var HttpClient */
+    private $client;
+
+    /** @var MessageFactory */
+    private $messageFactory;
 
     /** @var User[] All the fetched and hydrated users, with an id as a key **/
     protected static $users = [];
 
     /** @param string $token access token delivered by azure's oauth system */
-    public function __construct($token)
-    {
-        $this->guzzle = new Guzzle(['base_url' => 'https://graph.microsoft.com/v1.0/me/',
-                                    'defaults' => ['exceptions' => false,
-                                                    'headers' => ['Authorization' => sprintf('Bearer %s', $token),
-                                                                  'Content-Type' => 'application/json',
-                                                                  'Accept' => 'application/json']]]);
+    public function __construct(
+        $token,
+        HttpClient $client = null,
+        MessageFactory $messageFactory = null,
+        UriFactory $uriFactory = null
+    ) {
+        $uriFactory = $uriFactory ?: UriFactoryDiscovery::find();
+
+        $this->client = new PluginClient(
+            $client ?: HttpClientDiscovery::find(),
+            [
+                new AuthenticationPlugin(new Bearer($token)),
+                new BaseUriPlugin($uriFactory->createUri(
+                    $uriFactory->createUri('https://graph.microsoft.com/v1.0/me')
+                )),
+                new RedirectPlugin,
+                new ContentLengthPlugin,
+                new HeaderDefaultsPlugin([
+                    'Content-Type' => 'application/json',
+                    'Accept' => 'application/json'
+                ])
+            ]
+        );
+
+        $this->messageFactory = $messageFactory ?: MessageFactoryDiscovery::find();
     }
 
     /** {@inheritDoc} */
@@ -51,7 +90,7 @@ class Office365Adapter implements AdapterInterface
         static $api = null;
 
         if (null === $api) {
-            $api = new Api\CalendarApi($this->guzzle, $this);
+            $api = new Api\CalendarApi($this);
         }
 
         return $api;
@@ -63,7 +102,7 @@ class Office365Adapter implements AdapterInterface
         static $api = null;
 
         if (null === $api) {
-            $api = new Api\EventApi($this->guzzle, $this);
+            $api = new Api\EventApi($this);
         }
 
         return $api;
@@ -86,5 +125,29 @@ class Office365Adapter implements AdapterInterface
 
         return static::$users[$id];
     }
-}
 
+    public function sendRequest($method, $uri, array $headers = [], $body = null)
+    {
+
+        // deal with query string parameters
+        if (isset($headers['query'])) {
+            $uri = sprintf('%s?%s', $uri, implode('&', array_map(function ($k, $v) {
+                $v = is_array($v) ? implode(',', $v) : $v;
+                return sprintf('%s=%s', $k, $v);
+            }, array_keys($headers['query']), array_values($headers['query']))));
+            unset($headers['query']);
+        }
+
+        $response = $this->client->sendRequest(
+            $this->messageFactory->createRequest($method, $uri, $headers, $body)
+        );
+        $this->handleResponse($response);
+        $result = json_decode($response->getBody(), true);
+
+        if (null === $result) {
+            throw new Exception\BackendException($response);
+        }
+
+        return $result;
+    }
+}
