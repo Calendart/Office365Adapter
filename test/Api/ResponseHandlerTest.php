@@ -31,7 +31,7 @@ class ResponseHandlerTest extends TestCase
      */
     public function testHandleErrors($statusCode, $exception)
     {
-        $this->setExpectedException($exception);
+        $this->expectException($exception);
 
         $this->response->getStatusCode()->shouldBeCalled()->willReturn($statusCode);
         $this->response->getBody()->shouldBeCalled()->willReturn(json_encode(['error' => ['message' => 'foo']]));
