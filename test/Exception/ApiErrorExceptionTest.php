@@ -2,11 +2,13 @@
 
 namespace CalendArt\Adapter\Office365;
 
+use PHPUnit\Framework\TestCase;
+
 use Psr\Http\Message\ResponseInterface;
 
 use CalendArt\Adapter\Office365\Exception\BadRequestException;
 
-class ApiErrorExceptionTest extends \PHPUnit_Framework_TestCase
+class ApiErrorExceptionTest extends TestCase
 {
     public function testConstructWithBadFormat()
     {

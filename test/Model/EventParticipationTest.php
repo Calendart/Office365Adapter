@@ -2,12 +2,14 @@
 
 namespace CalendArt\Adapter\Office365\Model;
 
+use PHPUnit\Framework\TestCase;
+
 /**
  * Class EventParticipationTest
  * @package CalendArt\Adapter\Office365\Model
  * @author Manuel Raynaud <manu@raynaud.io>
  */
-class EventParticipationTest extends \PHPUnit_Framework_TestCase
+class EventParticipationTest extends TestCase
 {
     /**
      * @dataProvider statusProvider()

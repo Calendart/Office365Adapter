@@ -2,9 +2,11 @@
 
 namespace CalendArt\Adapter\Office365\Api;
 
+use PHPUnit\Framework\TestCase;
+
 use Psr\Http\Message\ResponseInterface;
 
-class ResponseHandlerTest extends \PHPUnit_Framework_TestCase
+class ResponseHandlerTest extends TestCase
 {
     private $response;
     private $api;
