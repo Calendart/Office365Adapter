@@ -2,7 +2,9 @@
 
 namespace CalendArt\Adapter\Office365\Model;
 
-class EventTest extends \PHPUnit_Framework_TestCase
+use PHPUnit\Framework\TestCase;
+
+class EventTest extends TestCase
 {
     public function testHydrateDates()
     {

@@ -2,9 +2,11 @@
 
 namespace CalendArt\Adapter\Office365\Api;
 
+use PHPUnit\Framework\TestCase;
+
 use Psr\Http\Message\ResponseInterface;
 
-class ResponseHandlerTest extends \PHPUnit_Framework_TestCase
+class ResponseHandlerTest extends TestCase
 {
     private $response;
     private $api;
@@ -29,7 +31,7 @@ class ResponseHandlerTest extends \PHPUnit_Framework_TestCase
      */
     public function testHandleErrors($statusCode, $exception)
     {
-        $this->setExpectedException($exception);
+        $this->expectException($exception);
 
         $this->response->getStatusCode()->shouldBeCalled()->willReturn($statusCode);
         $this->response->getBody()->shouldBeCalled()->willReturn(json_encode(['error' => ['message' => 'foo']]));

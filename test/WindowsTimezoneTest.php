@@ -2,12 +2,14 @@
 
 namespace CalendArt\Adapter\Office365;
 
+use PHPUnit\Framework\TestCase;
+
 /**
  * Class WindowsTimezoneTest
  * @package Calendart\Adapter\Office365\Test
  * @author Manuel Raynaud <manuel@wisembly.com>
  */
-class WindowsTimezoneTest extends \PHPUnit_Framework_TestCase
+class WindowsTimezoneTest extends TestCase
 {
     public function testValidRegisteredTimezone()
     {
