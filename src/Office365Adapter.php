@@ -11,6 +11,8 @@
 
 namespace CalendArt\Adapter\Office365;
 
+use InvalidArgumentException;
+
 use Http\Client\HttpClient;
 
 use Http\Client\Common\PluginClient;
@@ -117,6 +119,10 @@ class Office365Adapter implements AdapterInterface
      */
     public static function buildUser(array $data)
     {
+        if (!isset($data['emailAddress']['address'])) {
+            throw new InvalidArgumentException('The user\'s data has unexpected format, required [emailAddress][address]');
+        }
+
         $id = sha1($data['emailAddress']['address']);
 
         if (!isset(static::$users[$id])) {
